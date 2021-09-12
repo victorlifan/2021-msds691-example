@@ -88,12 +88,15 @@ SELECT TO_NUMBER('12,454.8-', '99G999D9S');
 --------------------------------------------------------
 -- 2.A Find the unique integer values of site_latitude and site_longitude in epa_site_location ordered by  latitude in ascending order, and then site longitude in descending order.
 --------------------------------------------------------
-
+SELECT DISTINCT site_latitude::INT, site_longitude::INT
+FROM epa_site_location
+ORDER BY site_latitude, site_longitude DESC;
 
 --------------------------------------------------------
 -- 2.B Find the unique YEAR-MONTH string pairs in epa_air_quality.
 --------------------------------------------------------
-
+SELECT DISTINCT TO_CHAR(DATE, 'YYYY-MM')
+FROM epa_air_quality;
 
 ------------------------------------------------------------
 -- NULL
