@@ -33,6 +33,10 @@ CREATE TABLE epa_air_quality_btree_index
 
 --TO DO : CREATE INDEX
 
+create index index_name 
+on tabl_name
+using btree (col_name);
+
 EXPLAIN ANALYZE VERBOSE
 SELECT aws_s3.table_import_from_s3(
    'epa_air_quality_btree_index', 'date,site_id,daily_mean_pm10_concentration, daily_aqi_value', '(FORMAT csv, HEADER true)',
@@ -42,7 +46,7 @@ SELECT aws_s3.table_import_from_s3(
  
 --TO DO :  CLUSTER
 
-
+cluster table_name using index_name; 
 -- Ex3.
 -- Analyze the following in the epa_air_quality_no_index table.
 -- Scan
@@ -79,6 +83,10 @@ CREATE TABLE epa_air_quality_hash_index
 
 
 -- TODO : CREATE INDEX
+
+create index index_name
+on table_name
+using btree (col_name);
 
 EXPLAIN ANALYZE VERBOSE
 SELECT aws_s3.table_import_from_s3(

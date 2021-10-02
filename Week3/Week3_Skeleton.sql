@@ -29,12 +29,12 @@ INSERT INTO epa_site_location VALUES (60070008,	'Chico-East Avenue', 39.76168, -
 
 
 COPY epa_site_location
-FROM '/Users/dwoodbridge/Class/2021_MSDS691/Example/Data/epa_site_location.csv'
+FROM '/Users/fanli/Desktop/classes/fall_1/691_01_relational_database/2021-msds691-example/Data/epa_site_location.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY epa_air_quality
-FROM '/Users/dwoodbridge/Class/2021_MSDS691/Example/Data/epa_air_quality.csv'
+FROM '/Users/fanli/Desktop/classes/fall_1/691_01_relational_database/2021-msds691-example/Data/epa_air_quality.csv'
 DELIMITER ','
 CSV HEADER;
 
@@ -65,7 +65,10 @@ INSERT INTO epa_site_location VALUES (60070001,	'Central Marin', 38.0834, -122.7
 -- Ex 3. Return rows in epa_site_location 
 -- which site_id does not appear in epa_air_quality ordered by site_id.
 ------------------------------------------------------------
-
+select *
+from epa_site_location
+where site_id not in (select distinct site_id from epa_air_quality)
+order by site_id;
 
 
 ------------------------------------------------------------
@@ -73,7 +76,11 @@ INSERT INTO epa_site_location VALUES (60070001,	'Central Marin', 38.0834, -122.7
 -- per site_id which has more than 30 records ordered by site_id
 ------------------------------------------------------------
 
-
+select site_id, min(daily_mean_pm10_concentration), avg(daily_mean_pm10_concentration), max(daily_mean_pm10_concentration)
+from epa_air_quality
+group by 1
+having count(*) >30
+order by 1;
 
 ------------------------------------------------------------
 -- Ex 5. Return date, site_name, daily_mean_pm10_concentration and daily_aqi_value ordered by site_id and date.
@@ -85,12 +92,25 @@ INSERT INTO epa_site_location VALUES (60070001,	'Central Marin', 38.0834, -122.7
 -- Ex 6. Assuming that data was supposed to be collected from every station on all the dates in epa_air_quality.
 --      Return date, site_id and daily_mean_pm10_concentration and daily_aqi_value for all possible date and site_id pairs ordered by date and site_id.
 ------------------------------------------------------------
-
+select sub.date, sub.site_id, daily_mean_pm10_concentration,daily_aqi_value
+from
+	(select distinct a.date, b.site_id
+	from epa_air_quality a, epa_site_location b) sub
+left join epa_air_quality ea
+on sub.date = ea.date and sub.site_id = ea.site_id
+order by 1,2;
 
 
 ------------------------------------------------------------
 -- Ex 7 . We are interested in how many readings were collected per site quarterly every year.
 -- The output should have cohort(year), site_id,  the number of readings between Jan-Mar, Apr-Jun, Jul-Sep and Oct-Dec ordered by cohort and site_id.
 ------------------------------------------------------------
-
+select extract(year from date), site_id ,
+	sum(case when extract(month from date) between 1 and 3 then 1 else 0 end) as jan_mar,
+	sum(case when extract(month from date) between 4 and 6 then 1 else 0 end) as apr_jun,
+	sum(case when extract(month from date) between 7 and 9 then 1 else 0 end) as jul_sep,
+	sum(case when extract(month from date) between 10 and 12 then 1 else 0 end) as oct_dec
+from epa_air_quality
+group by 1,2
+order by 1,2;
 

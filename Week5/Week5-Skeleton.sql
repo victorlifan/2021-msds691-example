@@ -1,4 +1,4 @@
-
+select * from tweets;
 -------------------------------------------------------
 -- Ex1. Create a table tweets and insert tweets.csv
 -------------------------------------------------------
@@ -12,7 +12,8 @@
 -- return id, time, hashtag, text and retweet_count 
 -- when retweet_count is over 100 ordered by retweet_count in descending order.
 -------------------------------------------------------
-
+SELECT id, time, hashtag, tweet->> 'text' as text, tweet ->> 'public_metrics'::
+from tweets;
 
 -------------------------------------------------------
 -- Ex3. Use the epa_air_quality table from Week3.
@@ -24,7 +25,10 @@
 -- Ex4. For January of 2020, return site_id, date, daily_mean_pm10_concentration, 
 -- and it average between the first day  and the current date per site_id.
 -------------------------------------------------------
-
+select site_id, date, daily_mean_pm10_concentration,
+		avg(daily_mean_pm10_concentration)over(partition by site_id rows between unbounded preceding and current row)
+from epa_air_quality
+where extract(month from date) = 01 and extract(year from date) = 2020;
 
 
 --p.20
@@ -60,13 +64,26 @@ DROP FUNCTION IF EXISTS increment;
 -- Ex6. Create a function called site_id_for_name which takes site_name and returns its corresponding site_id.
 -- Using this function return all the rows for 'Westmorland' ordered by date.
 -------------------------------------------------------
+CREATE OR REPLACE FUNCTION site_id_for_name(name varchar)
+RETURNs TABLE (site_id INT) AS
+$$
+SELECT site_id
+FROM epa_site_location
+WHERE site_name = name
+$$
+LANGUAGE SQL;
 
-
+select * from  site_id_for_name('Westmorland');
 -------------------------------------------------------
 -- Ex7. Create a view called epa_site_info_aqi which returns all the site_id, site_name, site_longitude, site_latitude and corresponding daily_mean_pm10_concentration and daily_aqi_value if exist.
 -- Return rows from epa_site_info_aqi where site_name is 'Westmorland'
 -------------------------------------------------------
-
+create or replace view epa_site_info_aqi as
+SELECT ea.site_id, site_name, site_longitude, site_latitude,
+	 daily_mean_pm10_concentration, daily_aqi_value
+FROM epa_air_quality ea
+JOIN epa_site_location es
+on ea.site_id = es.site_id
 
 -------------------------------------------------------
 -- Ex8. Create a view called epa_aqi_2020_01 which only stores January of 2020 data from epa_air_quality.

@@ -110,9 +110,11 @@ ORDER BY site_latitude, site_longitude DESC;
 
 --------------------------------------------------------
 -- 2.B Find the unique YEAR-MONTH string pairs in epa_air_quality.
+select distinct to_char(date, 'YYYY-MM')
+from epa_air_quality;
 --------------------------------------------------------
-SELECT DISTINCT TO_CHAR(DATE, 'YYYY-MM')
-FROM epa_air_quality;
+-- SELECT DISTINCT TO_CHAR(DATE, 'YYYY-MM')
+-- FROM epa_air_quality;
 
 ------------------------------------------------------------
 -- NULL
@@ -196,6 +198,9 @@ from epa_site_location;
 
 --------------------------------------------------------
 -- Ex 6. Return uniqe date, its year/month and timestamp truncated to "month" in epa_air_quality ordered by date.
+select distinct date, extract(year from date), extract (month from date), date_trunc('month', date)
+from epa_air_quality
+order by 1;
 --------------------------------------------------------
 SELECT DISTINCT date, extract(year from date) as year, extract(month from date) as month, date_trunc('month', date)
 from epa_air_quality
