@@ -12,7 +12,7 @@ CREATE TABLE tweets
 );
 
 COPY tweets
-FROM '/Users/dwoodbridge/Class/2021_MSDS691/2021-msds691-example/Data/tweets.csv'
+FROM '/Users/fanli/Desktop/classes/fall_1/691_01_relational_database/2021-msds691-example/Data/tweets.csv'
 DELIMITER ','
 CSV HEADER;
 
@@ -25,6 +25,12 @@ FROM tweets;
 -- return id, time, hashtag, text and retweet_count 
 -- when retweet_count is over 100 ordered by retweet_count in descending order.
 -------------------------------------------------------
+select id, 
+		time,
+		hashtag,
+		tweet -> 'text' AS text
+from tweets;
+
 SELECT  id, 
 		time,
 		hashtag,
